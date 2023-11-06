@@ -8,12 +8,14 @@ import json
 import h5py
 import os
 from PIL import Image
+import torchvision
 from dataloaders.data_utils import get_unk_mask_indices
 
 def load_dataset(args):
     normTransform = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     transform = transforms.Compose(
         [
+            transforms.ToPILImage(), #for the pad image function: tensor -> Image
             transforms.Resize((args.image_size, args.image_size)),
             transforms.ToTensor(),
             normTransform
@@ -55,7 +57,10 @@ class Designer(torch.utils.data.Dataset):
     def __getitem__(self, index):
         data = self.data[index]
         img_pth = os.path.join(self.root,data["file_path"])
-        image = self.image_transform(Image.open(img_pth).convert('RGB'))
+        # image = self.image_transform(Image.open(img_pth).convert('RGB'))
+        temp = torchvision.io.read_image(img_pth)
+        image = self.pad_image(temp)
+        image = self.image_transform(image)
         # label = data["season_label"]
         label = data["label"]
         label_vec = np.zeros(self.num_class)
@@ -65,3 +70,14 @@ class Designer(torch.utils.data.Dataset):
 
     def __len__(self):
         return len(self.data)
+
+    # Make all photos square
+    def pad_image(self, img):
+        h, w = img.shape[1:]
+        if h != w:
+            new_w = max(h, w)
+            pad_h, rem_h = divmod(new_w - h, 2)
+            pad_w, rem_w = divmod(new_w - w, 2)
+            padding = [pad_w, pad_h, pad_w + rem_w, pad_h + rem_h]
+            return torchvision.transforms.functional.pad(img, padding, padding_mode='edge')
+        return img

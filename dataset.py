@@ -9,7 +9,6 @@ import h5py
 import os
 from PIL import Image
 import torchvision
-from dataloaders.data_utils import get_unk_mask_indices
 
 def load_dataset(args):
     normTransform = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])

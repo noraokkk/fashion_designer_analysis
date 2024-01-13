@@ -30,16 +30,17 @@ def get_args(parser,eval=False):
     parser.add_argument('--warmup_scheduler', action='store_true',help='')
 
     # # # Testing Models
-    parser.add_argument('--inference', action='store_true', default=False) #True for evluation
+    parser.add_argument('--inference', action='store_true', default=True) #True for evluation
     parser.add_argument('--saved_model_name', type=str, default='results//best_model.pt') #model3 resnet50
-    parser.add_argument('--saved_backbone_name', type=str, default='results/fashion_designers.3layer.bsz_128sz_224.sgd0.002/best_model.pt') #model3 resnet50
+    parser.add_argument('--saved_backbone_name', type=str, default='results/fashion_designers_c5.3layer.bsz_128sz_224.sgd0.002/best_model.pt') #model3 resnet50
 
     parser.add_argument('--overwrite', action='store_true')
     parser.add_argument('--resume', action='store_true', default=False)
     parser.add_argument('--name', type=str, default='')
 
     parser.add_argument('--image_size', type=int, default=224)
-    parser.add_argument('--data_dir', type=str, default='/home/sicelukwanda/modm/datasets/fashion_designers_list', help='the dir of the data json files')
+    # parser.add_argument('--data_dir', type=str, default='/home/sicelukwanda/modm/datasets/fashion_designers_list', help='the dir of the data json files')
+    parser.add_argument('--data_dir', type=str, default='F:/datasets//fashion_designers_list', help='the dir of the data json files')
     args = parser.parse_args("")
     model_name = args.dataset
 

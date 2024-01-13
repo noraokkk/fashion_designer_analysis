@@ -57,8 +57,7 @@ class Designer(torch.utils.data.Dataset):
         data = self.data[index]
         img_pth = os.path.join(self.root,data["file_path"])
         # image = self.image_transform(Image.open(img_pth).convert('RGB'))
-        temp = torchvision.io.read_image(img_pth)
-        image = self.pad_image(temp)
+        image = self.pad_image(torchvision.io.read_image(img_pth,mode=torchvision.io.ImageReadMode.RGB))
         image = self.image_transform(image)
         # label = data["season_label"]
         label = data["label"]

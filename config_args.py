@@ -1,22 +1,26 @@
 import os
 
 def get_args(parser,eval=False):
-    parser.add_argument('--dataset', type=str, choices=['fashion_designers'], default='fashion_designers')
-    parser.add_argument('--workers', type=int, default=10)
+    parser.add_argument('--dataset', type=str, choices=['fashion_designers_c5','fashion_brands_101_res18','fashion_brands_101_Vit','fashion_brands_101_res50','fashion_brands_101_res101'], default='fashion_brands_101_res101')
+    parser.add_argument('--workers', type=int, default=4)
     parser.add_argument('--results_dir', type=str, default='results/')
-    parser.add_argument('--num_classes', type=int, default=5, help='class num')
+    parser.add_argument('--num_classes', type=int, default=101, help='class num')
+    # change the backbones
+    parser.add_argument('--backbone_type', type=str, default='cnn', help='backbone type: cnn or Vit')
+    # parser.add_argument('--backbone', type=str, default='google/vit-base-patch16-224-in21k', help='backbone name: resnet18, resnet50, google/vit-base-patch16-224-in21k')
+    parser.add_argument('--backbone', type=str, default='resnet101', help='backbone name: resnet18, resnet50,resnet101, google/vit-base-patch16-224-in21k')
 
 
     # Optimization
     parser.add_argument('--optim', type=str, choices=['adam', 'sgd'], default='sgd')
     parser.add_argument('--lr', type=float, default=0.002)
     # parser.add_argument('--lr', type=float, default=0.002) #personality
-    parser.add_argument('--batch_size', type=int, default=128) #personality
+    parser.add_argument('--batch_size', type=int, default=16) #personality
     parser.add_argument('--test_batch_size', type=int, default=-1)
     parser.add_argument('--grad_ac_steps', type=int, default=1)
     parser.add_argument('--scheduler_step', type=int, default=1000)
     parser.add_argument('--scheduler_gamma', type=float, default=0.1)
-    parser.add_argument('--epochs', type=int, default=20)
+    parser.add_argument('--epochs', type=int, default=50)
     parser.add_argument('--int_loss', type=float, default=0.0)
     parser.add_argument('--aux_loss', type=float, default=0.0)
     parser.add_argument('--loss_type', type=str, choices=['bce', 'mixed','class_ce','soft_margin'], default='bce')
@@ -45,9 +49,9 @@ def get_args(parser,eval=False):
     parser.add_argument('--n_groups', type=int, default=10,help='groups for CUB test time intervention')
 
     # # # Testing Models
-    parser.add_argument('--inference', action='store_true', default=True) #True for evluation
+    parser.add_argument('--inference', action='store_true', default=False) #True for evluation
     # parser.add_argument('--saved_model_name', type=str, default='results/john_galliano_res18.3layer.bsz_256sz_224.sgd0.002/best_model.pt') #model3 resnet50
-    parser.add_argument('--saved_model_name', type=str, default='results/fashion_designers.3layer.bsz_128sz_224.sgd0.002/best_model.pt') #model3 resnet50
+    parser.add_argument('--saved_model_name', type=str, default='results//fashion_brands_101_res18.3layer.bsz_128sz_224.sgd0.002//best_model.pt') #model3 resnet50
 
     parser.add_argument('--overwrite', action='store_true')
     parser.add_argument('--resume', action='store_true', default=False)
@@ -57,7 +61,8 @@ def get_args(parser,eval=False):
     # Image Sizes personality
     parser.add_argument('--image_size', type=int, default=224)
     # parser.add_argument('--data_dir', type=str, default='/home/sicelukwanda/modm/datasets/fashion_designers/john_galliano_refine/dress_pure_renamed', help='the dir of the data json files')
-    parser.add_argument('--data_dir', type=str, default='/home/sicelukwanda/modm/datasets/fashion_designers_list', help='the dir of the data json files')
+    # parser.add_argument('--data_dir', type=str, default='/home/sicelukwanda/modm/datasets/fashion_designers_list', help='the dir of the data json files')
+    parser.add_argument('--data_dir', type=str, default='F://datasets//fashion_brands', help='the dir of the data json files')
 
     args = parser.parse_args()
     model_name = args.dataset

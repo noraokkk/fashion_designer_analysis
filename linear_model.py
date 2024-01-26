@@ -41,24 +41,22 @@ class CosineKernel(gpytorch.kernels.Kernel):
     ) -> LinearOperator:
         assert not last_dim_is_batch
         x1_ = x1
+        x2_ = x2
         x1_norm = (torch.linalg.norm(x1_, dim=-1, keepdim=True) + 1).sqrt().reciprocal()
 
         if x1.size() == x2.size() and torch.equal(x1, x2):
-            # Use RootLinearOperator when x1 == x2 for efficiency when composing
-            # with other kernels
-            prod = RootLinearOperator(x1_).add(torch.as_tensor([[1.]]).to(x1_))
-            prod *= RootLinearOperator(x1_norm * self.variance.sqrt())
+            x2_norm = x1_norm
         else:
-            x2_ = x2
             x2_norm = (torch.linalg.norm(x2_, dim=-1, keepdim=True) + 1).sqrt().reciprocal()
-            prod = MatmulLinearOperator(
-                x1_ * x1_norm * self.variance.sqrt(),
-                (x2_ * x2_norm * self.variance.sqrt()).transpose(-2, -1)
-            )
-            prod += MatmulLinearOperator(
-                x1_norm * self.variance.sqrt(),
-                x2_norm.transpose(-2, -1) * self.variance.sqrt()
-            )
+
+        prod = MatmulLinearOperator(
+            x1_ * x1_norm * self.variance.sqrt(),
+            (x2_ * x2_norm * self.variance.sqrt()).transpose(-2, -1)
+        )
+        prod += MatmulLinearOperator(
+            x1_norm * self.variance.sqrt(),
+            x2_norm.transpose(-2, -1) * self.variance.sqrt()
+        )
 
         if diag:
             return prod.diagonal(dim1=-1, dim2=-2)
